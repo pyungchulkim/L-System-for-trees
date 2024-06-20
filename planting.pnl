@@ -1,0 +1,141 @@
+pver 1 1
+name: planting
+associate: Lsystem
+trigger: newlsystem
+items: 18
+type: LABEL
+name: Planting Trees
+color: 255,255,0
+origin: 14 158
+
+type: SLIDER
+name: Years to grow
+colors: 255,255,255 255,0,0
+origin: 191 66
+min/max: 10 100
+value: 40
+message: d pMAX_YEARS %d 1
+
+type: SLIDER
+name: Custom
+colors: 255,255,255 4,196,0
+origin: 50 190
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_0 %d 1
+
+type: SLIDER
+name: Big maple
+colors: 255,255,255 4,196,0
+origin: 189 190
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_1 %d 1
+
+type: SLIDER
+name: Birch
+colors: 255,255,255 4,196,0
+origin: 329 191
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_2 %d 1
+
+type: SLIDER
+name: Cedar
+colors: 255,255,255 4,196,0
+origin: 50 238
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_3 %d 1
+
+type: SLIDER
+name: Cherry
+colors: 255,255,255 4,196,0
+origin: 189 238
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_4 %d 1
+
+type: SLIDER
+name: Cottonwood
+colors: 255,255,255 4,196,0
+origin: 328 238
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_5 %d 1
+
+type: SLIDER
+name: Oak
+colors: 255,255,255 4,196,0
+origin: 50 285
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_6 %d 1
+
+type: SLIDER
+name: Pine
+colors: 255,255,255 4,196,0
+origin: 189 285
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_7 %d 1
+
+type: SLIDER
+name: Weeping willow
+colors: 255,255,255 4,196,0
+origin: 328 285
+min/max: 0 100
+value: 10
+message: d pNUM_TREE_8 %d 1
+
+type: SLIDER
+name: Rhody
+colors: 255,255,255 4,196,0
+origin: 50 333
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_9 %d 1
+
+type: SLIDER
+name: Vine maple
+colors: 255,255,255 4,196,0
+origin: 189 333
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_10 %d 1
+
+type: SLIDER
+name: Fir
+colors: 255,255,255 4,196,0
+origin: 328 333
+min/max: 0 100
+value: 0
+message: d pNUM_TREE_11 %d 1
+
+type: SLIDER
+name: Planting angle
+colors: 255,255,255 255,0,0
+origin: 329 66
+min/max: 5 120
+value: 30
+message: d pPLANT_ANGLE %d 1
+
+type: SLIDER
+name: Random seed
+colors: 255,255,255 255,0,0
+origin: 52 66
+min/max: 0 10
+value: 0
+message: d pSEED %d 1
+
+type: LABEL
+name: Program-wide parameters
+color: 255,255,0
+origin: 14 28
+
+type: BUTTON
+name: For ORStudio
+colors: 255,255,255 0,0,255
+origin: 52 112
+value: 0
+message: d pFOR_ORSTUDIO %d 1

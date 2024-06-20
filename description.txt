@@ -1,0 +1,4 @@
+My Art project to learn the rhythm of trees.
+It is based upon parametric L-system that utilizes
+fractal generation alogorithm.
+The program is using CFPG developed by Univ of Calgary.

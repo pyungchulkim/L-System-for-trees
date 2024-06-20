@@ -1,0 +1,70 @@
+pver 1 1
+name: viewing
+associate: View
+trigger: newview
+items: 9
+type: SLIDER
+name: Reference point [X]
+colors: 255,255,255 255,0,0
+origin: 35 220
+min/max: -200 200
+value: 0
+message: 4 1 %d 1
+
+type: SLIDER
+name: Reference point [Y]
+colors: 255,255,255 255,0,0
+origin: 187 220
+min/max: 0 100
+value: 30
+message: 4 2 %d 1
+
+type: SLIDER
+name: Reference point [Z]
+colors: 255,255,255 255,0,0
+origin: 339 220
+min/max: 0 200
+value: 200
+message: 4 3 %d -1
+
+type: SLIDER
+name: View point [X]
+colors: 255,255,255 255,0,0
+origin: 35 121
+min/max: -200 200
+value: 0
+message: 5 1 %d 1
+
+type: SLIDER
+name: View point [Y]
+colors: 255,255,255 255,0,0
+origin: 187 121
+min/max: 0 100
+value: 6
+message: 5 2 %d 1
+
+type: SLIDER
+name: View point [Z]
+colors: 255,255,255 255,0,0
+origin: 339 121
+min/max: 0 200
+value: 0
+message: 5 3 %d -1
+
+type: SLIDER
+name: View angle
+colors: 255,255,255 255,0,0
+origin: 36 35
+min/max: 10 120
+value: 25
+message: 6 1 %d 1
+
+type: LABEL
+name: Where to look at
+color: 255,255,0
+origin: 32 191
+
+type: LABEL
+name: Where to stand
+color: 255,255,0
+origin: 36 85
