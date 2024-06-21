@@ -38,6 +38,9 @@
  * - Each iteration of my L-system represents a year.
  * - Deterministic productions (rather than stochastic) are used; 
  *   Hence, the order of the productions in the program are important.
+ *
+ * by Pyungchul Kim, 2024
+ * http://orderedrandom.com
  */
 
 /* Program-wide parameters - hard-coded.
