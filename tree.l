@@ -273,7 +273,7 @@ endeach: {
 	[@Tx(hGROUND_TEXTURE);(0)!(0.01)@M(-w/2,0,0){&(90)f(d)-(90)f(w)-(90)f(d)-(90)f(w)}]
 
 /* Planting a new tree (type=t) at location (x,y,z) */
-#define PLANT_TREE(x,y,z,n,t,txt)	@M(x,y,z)@Tx(txt)!(p[t][iWID_MAX])[SV(0,0)?H(0,0,0)A(n,0,p[t][iWID_MAX],pMAX_YEARS)E]
+#define PLANT_TREE(x,y,z,n,t,txt,c)	@M(x,y,z)@Tx(txt);(c)!(p[t][iWID_MAX])[SV(0,0)?H(0,0,0)A(n,0,p[t][iWID_MAX],pMAX_YEARS)E]
 
 derivation length: 1000000
 
@@ -285,9 +285,15 @@ P(n) : (n > 0) {	/* plant all trees */
 	  z = trees[n][1];
 	  t = trees[n][2];
 	  y = p[t][iSTART_DEPTH];
-	  txt = (pFOR_ORSTUDIO == 1) ? 0 : p[t][iTEXTURE];
+	  txt = p[t][iTEXTURE];
+	  c = 15;
+	  /* set texture and color differently for ORStudio input */
+	  if (pFOR_ORSTUDIO == 1) {
+	    txt = 0;
+	    c = floor(ran(240)) + 16;
+	  }
 	} 
-	--> PLANT_TREE(x,y,z,n,t,txt)P(n)
+	--> PLANT_TREE(x,y,z,n,t,txt,c)P(n)
 P(n) : (n == 0) {	/* planting done. trigger to start growth */
 	  curr_y = pMAX_YEARS;
 	}
@@ -431,6 +437,7 @@ homomorphism: warnings
 /* Start/end a generalized cylinder for a new branch */
 S --> {(1)f(0)
 E --> }(1)
+
 
 /* Set the direction vector:
  * rotate and pitch down, but always recover the rotation angle to the ground 

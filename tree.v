@@ -10,7 +10,7 @@ viewing angle: 20
  */
 
 /* color control - initial color is used for trees */
-initial color: 120
+initial color: 200
 color increment: 1
 
 /* line control */
