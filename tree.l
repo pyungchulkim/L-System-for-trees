@@ -63,8 +63,8 @@
  * Prefixed by 'p' for program readability.
  */
 #define pSEED 0	/* 0 for no seed setting */
-#define pMAX_YEARS 40	/* # of iteration - each step for a year */
-#define pPLANT_ANGLE 30		/* plant only within this angle for optimization */
+#define pMAX_YEARS 52	/* # of iteration - each step for a year */
+#define pPLANT_ANGLE 18		/* plant only within this angle for optimization */
 #define pFOR_ORSTUDIO 0		/* for ORStudio input: no BG, no texture */
 
 /* Number of trees to plant for each type - can be set by 'planting' panel */
@@ -76,7 +76,7 @@
 #define pNUM_TREE_5 0
 #define pNUM_TREE_6 0
 #define pNUM_TREE_7 0
-#define pNUM_TREE_8 10
+#define pNUM_TREE_8 58
 #define pNUM_TREE_9 0
 #define pNUM_TREE_10 0
 #define pNUM_TREE_11 0
@@ -87,18 +87,18 @@
  * - use 'param' panel to customize these parameters.
  * - later, a defined set of parameters can be packaged into predefined tree types
  */
-#define tWID_MIN 0.020833	/* 0.083 = 1/12 foot */
-#define tWID_MAX 0.500000	/* lowest trunk width */
-#define tPRUN_R 0.910000	/* pruning rate */
-#define tLEN_MIN 0.250000	/* min internode length */
-#define tLEN_MAX 1.500000	/* max internode length */
-#define tL_MAX 3	/* max # of lateral branch. max=L_PROD_ARRAY_SIZE */
-#define tT_WID_R 0.700000	/* top width to mother when branching. 1 for all top */ 
-#define tT_ANG 18	/* mean for top apex angle. degree of alternation */
-#define tL_ANG 50	/* mean for lateral apex angle */
+#define tWID_MIN 0.125000	/* 0.083 = 1/12 foot */
+#define tWID_MAX 2.000000	/* lowest trunk width */
+#define tPRUN_R 0.520000	/* pruning rate */
+#define tLEN_MIN 0.500000	/* min internode length */
+#define tLEN_MAX 1.000000	/* max internode length */
+#define tL_MAX 9	/* max # of lateral branch. max=L_PROD_ARRAY_SIZE */
+#define tT_WID_R 0.960000	/* top width to mother when branching. 1 for all top */ 
+#define tT_ANG 6	/* mean for top apex angle. degree of alternation */
+#define tL_ANG 16	/* mean for lateral apex angle */
 #define tGRAV_SI 0.130000		/* gravity intensity of branch start */
 #define tGRAV_MI -0.060000		/* gravity intensity of branch middle */
-#define tGRAV_EI -0.030000		/* gravity intensity of branch end */
+#define tGRAV_EI 0.080000		/* gravity intensity of branch end */
 #define tSTART_DEPTH 0.000000			/* depth of the first branching - no pruning */
 #define tTEXTURE 3			/* texture index for bark */
 
@@ -195,7 +195,13 @@ define: {
 	array l_a[hL_PROD_ARRAY_SIZE]; 	/* angle */
 	array l_w[hL_PROD_ARRAY_SIZE]; 	/* width */
 	array l_e[hL_PROD_ARRAY_SIZE]; 	/* estimated life time */
-}		
+}	
+
+/* NOTE: I use curr_y to control the iterations between planting and growing.
+ * A negative number (-1) of curr_y indicates planting iterations. 0 indicates
+ * the start of planting, any positive integer indicates i-th year of growth.
+ * The growing ends when curr_y has reached pMAX_YEARS.
+ */	
 
 start: {
 	curr_y = -1; 	/* flag that growth has not started */
@@ -240,7 +246,6 @@ start: {
 
 	total_trees = n;
 	printf("Number of trees to plant: %0.f\n", n);
-	curr_n = -1;
 }
 
 starteach: {
@@ -250,17 +255,16 @@ starteach: {
 }
 
 endeach: {
+	/* Use stop(1) to display the trees per animation spec.
+	 * Without this, it won't display at all until all iterations are done.
+	 */
+	if (curr_y == 0) {  /* all trees are ready to grow */
+	  stop(1);
+	}
 	if (curr_y == pMAX_YEARS) {
-	  stop(1);	/* pause for the 1st tree and continue when 'Run' */
-	  curr_n = curr_n + 1;
-	  if (curr_n < total_trees) {
-	    printf("\nStart to grow tree [%0.f]\n", curr_n);
-	    curr_y = 0;	/* restart the year for a new tree growth */
-	  } else {
-	    printf("\nAll done!\n");
-	    curr_y = -1;	/* all growth is done */
-	    stop(0);	/* stop the simulation */
-	  }
+	  printf("\nAll done!\n");
+	  curr_y = -1;	/* all growth is done */
+	  stop(0);	/* stop the simulation */
 	}
 	if (curr_y >=0) {	/* growing: advance to next year */
 	  curr_y = curr_y + 1;
@@ -273,29 +277,33 @@ endeach: {
 	[@Tx(hGROUND_TEXTURE);(0)!(0.01)@M(-w/2,0,0){&(90)f(d)-(90)f(w)-(90)f(d)-(90)f(w)}]
 
 /* Planting a new tree (type=t) at location (x,y,z) */
-#define PLANT_TREE(x,y,z,n,t,txt,c)	@M(x,y,z)@Tx(txt);(c)!(p[t][iWID_MAX])[SV(0,0)?H(0,0,0)A(n,0,p[t][iWID_MAX],pMAX_YEARS)E]
+#define PLANT_TREE(x,y,z,n,t,txt,c)	@M(x,y,z)@Tx(txt);(c)!(p[t][iWID_MAX])[SV(0,0)A(n,0,p[t][iWID_MAX],pMAX_YEARS)E]
 
 derivation length: 1000000
 
 axiom: 	P(total_trees)B
 
-P(n) : (n > 0) {	/* plant all trees */ 
+/* Plant all trees first, then grow them altogether a year per iteration.
+ * The approach to grow one tree after another takes too long 
+ * due to useless scans of productions.
+ */
+P(n) : (n > 0) {
 	  n = n - 1; 
 	  x = trees[n][0];
 	  z = trees[n][1];
 	  t = trees[n][2];
 	  y = p[t][iSTART_DEPTH];
 	  txt = p[t][iTEXTURE];
-	  c = 15;
+	  c = 15; /* default color */
 	  /* set texture and color differently for ORStudio input */
 	  if (pFOR_ORSTUDIO == 1) {
 	    txt = 0;
-	    c = floor(ran(240)) + 16;
+	    c = floor(ran(240)) + 16;	/* use a random color skipping the first 16 grays */
 	  }
 	} 
 	--> PLANT_TREE(x,y,z,n,t,txt,c)P(n)
 P(n) : (n == 0) {	/* planting done. trigger to start growth */
-	  curr_y = pMAX_YEARS;
+	  curr_y = 0;
 	}
 	--> *
 
@@ -314,7 +322,7 @@ B : (pFOR_ORSTUDIO == 0) --> BACKGROUND(hGROUND_W,hGROUND_D,hBGROUND_H)
  */
 
 /* kill apexes if too thin, or set to die as 0 width */
-V(r,a)?H(x,y,z)A(n,s,w,e) : (w < p[trees[n][2]][iWID_MIN]) --> *
+V(r,a)A(n,s,w,e) : (w < p[trees[n][2]][iWID_MIN]) --> *
 
 /* clean-up unused productions */
 [SE] --> *
@@ -328,10 +336,9 @@ V(r,a)?H(x,y,z)A(n,s,w,e) : (w < p[trees[n][2]][iWID_MIN]) --> *
  * Instead, I'm hard-coding with max productions and some of which will
  * have 0 width, which will be harmlessly killed in the next iteration.
  */
-?H(x,y,z)A(n,s,w,e) : (curr_y > 0 && n == curr_n) 
+A(n,s,w,e) : (curr_y > 0) 
 	{ 
 	  age = curr_y - s;	/* the current age of the branch */
-	  fy = fabs(y);		/* vertical intensity */
 	  t = trees[n][2];	/* tree type */
 
 	  /* length of the current internode */
@@ -343,9 +350,7 @@ V(r,a)?H(x,y,z)A(n,s,w,e) : (w < p[trees[n][2]][iWID_MIN]) --> *
 	  }
 
 	  /* calculate the vector of the next top apexes. */
-	  span = (0.2 + 0.8 * fy) * 180;
-	  top_r = 90 + ran(span) - span / 2; /* horizonals tend to stay horizontal */
-	  top_r = (ran(1) < 0.5) ? top_r : top_r + 180; /* alternate randomly */
+	  top_r = ran(360);
 	  top_a = NRAN(p[t][iT_ANG]);
 
 	  /* calculate # of next lateral branches to live */
@@ -415,34 +420,31 @@ V(r,a)?H(x,y,z)A(n,s,w,e) : (w < p[trees[n][2]][iWID_MIN]) --> *
 	  tp = 2 * (gi_1 - gi_0) / e * cut + gi_0;
 	  if (tp == 0) { tp = 0.00001; }  /* HACK to avoid weird behavior of CFP at zero tropism */
 	}
-	--> @Ts(1,tp)!(w)N(len_0)				/* draw the internode */
-	[SV(l_r[0],l_a[0])?H(0,0,0)A(n,curr_y,l_w[0],l_e[0])E]	
-	[SV(l_r[1],l_a[1])?H(0,0,0)A(n,curr_y,l_w[1],l_e[1])E]	
-	[SV(l_r[2],l_a[2])?H(0,0,0)A(n,curr_y,l_w[2],l_e[2])E]	
-	[SV(l_r[3],l_a[3])?H(0,0,0)A(n,curr_y,l_w[3],l_e[3])E]	
-	[SV(l_r[4],l_a[4])?H(0,0,0)A(n,curr_y,l_w[4],l_e[4])E]	
-	[SV(l_r[5],l_a[5])?H(0,0,0)A(n,curr_y,l_w[5],l_e[5])E]	
-	[SV(l_r[6],l_a[6])?H(0,0,0)A(n,curr_y,l_w[6],l_e[6])E]	
-	[SV(l_r[7],l_a[7])?H(0,0,0)A(n,curr_y,l_w[7],l_e[7])E]	
-	[SV(l_r[8],l_a[8])?H(0,0,0)A(n,curr_y,l_w[8],l_e[8])E]	
-	[SV(l_r[9],l_a[9])?H(0,0,0)A(n,curr_y,l_w[9],l_e[9])E]	
-	V(top_r,top_a)?H(0,0,0)A(n,s,top_w,e)	/* top apex */
+	--> @Ts(1,tp)!(w)N(len_0) 	/* draw the internode */
+	[SV(l_r[0],l_a[0])A(n,curr_y,l_w[0],l_e[0])E]	
+	[SV(l_r[1],l_a[1])A(n,curr_y,l_w[1],l_e[1])E]	
+	[SV(l_r[2],l_a[2])A(n,curr_y,l_w[2],l_e[2])E]	
+	[SV(l_r[3],l_a[3])A(n,curr_y,l_w[3],l_e[3])E]	
+	[SV(l_r[4],l_a[4])A(n,curr_y,l_w[4],l_e[4])E]	
+	[SV(l_r[5],l_a[5])A(n,curr_y,l_w[5],l_e[5])E]	
+	[SV(l_r[6],l_a[6])A(n,curr_y,l_w[6],l_e[6])E]	
+	[SV(l_r[7],l_a[7])A(n,curr_y,l_w[7],l_e[7])E]	
+	[SV(l_r[8],l_a[8])A(n,curr_y,l_w[8],l_e[8])E]	
+	[SV(l_r[9],l_a[9])A(n,curr_y,l_w[9],l_e[9])E]	
+	V(top_r,top_a)A(n,s,top_w,e)	/* top apex */
 
 /* The stems are drawn in homomorphism in order not to interfere
- * the growth productions. 
+ * the growth productions. For some reason, it also gives better performance.
 */
 
 homomorphism: warnings
 
+/* Vector (direction) of an apex: rotate and pitch down */
+V(r,a) --> /(r)&(a)
+
 /* Start/end a generalized cylinder for a new branch */
 S --> {(1)f(0)
 E --> }(1)
-
-
-/* Set the direction vector:
- * rotate and pitch down, but always recover the rotation angle to the ground 
- */
-V(r,a) --> /(r)&(a)@v
 
 /* Draw the internode. Note that homomorphism is re-evaluated even at every 
  * mouse operation. This could slow down interactive viewing substantially.

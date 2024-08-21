@@ -1,11 +1,11 @@
 double buffer: off
-clear between frames: on
+clear between frames: off
 scale between frames: off
 new view between frames: off
 hcenter between frames: off
 swap interval: 0
-first frame: 0
+first frame: 1
 last frame: -1
-step: 50
+step: 5
 display on request: off
 frame numbers: consecutive
