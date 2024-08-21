@@ -9,20 +9,20 @@ color: 255,255,0
 origin: 14 22
 
 type: SLIDER
-name: Min width (x*0.25")
+name: Min width (cm)
 colors: 255,255,255 255,0,0
 origin: 22 51
-min/max: 1 8
-value: 4
-message: d tWID_MIN %d 48
+min/max: 1 10
+value: 2
+message: d tWID_MIN %d 1
 
 type: SLIDER
-name: Max width (x*0.5')
+name: Max width (cm)
 colors: 255,255,255 255,0,0
 origin: 157 51
-min/max: 1 10
-value: 4
-message: d tWID_MAX %d 2
+min/max: 10 200
+value: 50
+message: d tWID_MAX %d 1
 
 type: SLIDER
 name: Pruning rate (%)
@@ -33,20 +33,20 @@ value: 10
 message: d tPRUN_R %d 100
 
 type: SLIDER
-name: Min length in inches
+name: Min length (cm)
 colors: 255,255,255 0,255,25
 origin: 22 97
-min/max: 1 36
-value: 12
-message: d tLEN_MIN %d 12
+min/max: 1 200
+value: 30
+message: d tLEN_MIN %d 1
 
 type: SLIDER
-name: Max length in inches
+name: Max length (cm)
 colors: 255,255,255 0,255,25
 origin: 157 97
-min/max: 6 64
-value: 24
-message: d tLEN_MAX %d 12
+min/max: 1 200
+value: 60
+message: d tLEN_MAX %d 1
 
 type: SLIDER
 name: Max lateral branches

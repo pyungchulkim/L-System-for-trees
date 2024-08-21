@@ -1,5 +1,5 @@
 double buffer: off
-clear between frames: off
+clear between frames: on
 scale between frames: off
 new view between frames: off
 hcenter between frames: off

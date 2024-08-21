@@ -1,8 +1,8 @@
 /* DO NOT MOVE THE LINES OF THE FOLLOWING ITEMS AS THEY ARE REFERENCED
  * BY PANELS WITH LINE NUMBER
  */
-view reference point: 0,20,-200.0000
-viewpoint: 0,10,-0.0000
+view reference point: 0,600,-6000.0000
+viewpoint: 0,1500,6000.0000
 viewing angle: 20
 
 /* NOTE: DO NOT ADD COMMENTS AT THE END OF A VALID CONTROL.
@@ -18,8 +18,8 @@ line style: cylinder
 
 /* viewing control */
 projection: perspective
-front distance: 0.1
-back distance: 100000.0
+front distance: 3.0
+back distance: 3000000.0
 
 /* rendering control */
 render mode: filled

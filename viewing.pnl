@@ -7,7 +7,7 @@ type: SLIDER
 name: Reference point [X]
 colors: 255,255,255 255,0,0
 origin: 35 220
-min/max: -200 200
+min/max: -6000 6000
 value: 0
 message: 4 1 %d 1
 
@@ -15,23 +15,23 @@ type: SLIDER
 name: Reference point [Y]
 colors: 255,255,255 255,0,0
 origin: 187 220
-min/max: 0 100
-value: 30
+min/max: 0 10000
+value: 900
 message: 4 2 %d 1
 
 type: SLIDER
 name: Reference point [Z]
 colors: 255,255,255 255,0,0
 origin: 339 220
-min/max: 0 200
-value: 200
+min/max: 0 6000
+value: 6000
 message: 4 3 %d -1
 
 type: SLIDER
 name: View point [X]
 colors: 255,255,255 255,0,0
 origin: 35 121
-min/max: -200 200
+min/max: -6000 6000
 value: 0
 message: 5 1 %d 1
 
@@ -39,15 +39,15 @@ type: SLIDER
 name: View point [Y]
 colors: 255,255,255 255,0,0
 origin: 187 121
-min/max: 0 100
-value: 6
+min/max: 0 3000
+value: 1500
 message: 5 2 %d 1
 
 type: SLIDER
 name: View point [Z]
 colors: 255,255,255 255,0,0
 origin: 339 121
-min/max: 0 200
+min/max: -6000 6000
 value: 0
 message: 5 3 %d -1
 
@@ -55,8 +55,8 @@ type: SLIDER
 name: View angle
 colors: 255,255,255 255,0,0
 origin: 36 35
-min/max: 10 120
-value: 25
+min/max: 10 180
+value: 30
 message: 6 1 %d 1
 
 type: LABEL
