@@ -2,7 +2,7 @@ pver 1 1
 name: planting
 associate: Lsystem
 trigger: newlsystem
-items: 18
+items: 19
 type: LABEL
 name: Planting Trees
 color: 255,255,0
@@ -113,12 +113,12 @@ value: 0
 message: d pNUM_TREE_11 %d 1
 
 type: SLIDER
-name: Planting angle
+name: Ground Width (cm)
 colors: 255,255,255 255,0,0
-origin: 329 66
-min/max: 5 120
-value: 30
-message: d pPLANT_ANGLE %d 1
+origin: 51 117
+min/max: 100 9000
+value: 2000
+message: d pGROUND_W %d 1
 
 type: SLIDER
 name: Random seed
@@ -136,6 +136,14 @@ origin: 14 28
 type: BUTTON
 name: For ORStudio
 colors: 255,255,255 0,0,255
-origin: 52 112
+origin: 329 117
 value: 0
 message: d pFOR_ORSTUDIO %d 1
+
+type: SLIDER
+name: Ground Depth (cm)
+colors: 255,255,255 255,0,0
+origin: 190 118
+min/max: 100 9000
+value: 2000
+message: d pGROUND_D %d 1

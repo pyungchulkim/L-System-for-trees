@@ -1,9 +1,6 @@
-/* DO NOT MOVE THE LINES OF THE FOLLOWING ITEMS AS THEY ARE REFERENCED
- * BY PANELS WITH LINE NUMBER
- */
-view reference point: 0,600,-6000.0000
-viewpoint: 0,1500,6000.0000
-viewing angle: 20
+view reference point: 0,200,6000
+viewpoint: 0,500,-1000
+viewing angle: 45
 
 /* NOTE: DO NOT ADD COMMENTS AT THE END OF A VALID CONTROL.
  * IT WILL CAUSE A PARSING ERROR.
@@ -16,9 +13,11 @@ color increment: 1
 /* line control */
 line style: cylinder
 
-/* viewing control */
-projection: perspective
-front distance: 3.0
+/* viewing control:
+ * The best front distance seems 3.0 for perspective, -5000 for parallel
+ */
+projection: parallel
+front distance: -5000
 back distance: 3000000.0
 
 /* rendering control */

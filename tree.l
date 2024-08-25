@@ -44,7 +44,14 @@
  *
  * 5. Other notes
  * - All measurements are in centimeter in length, degree in angle.
- * - Each iteration of my L-system represents a year.
+ * - Each iteration of my L-system represents a year. The iteration stops
+ *   when it reaches pMAX_YEARS or no new lateral branch is created.
+ * - The coordinate of the planting space: <x, y, z> where
+ *   x indicates horizonal axis and 0 is at the center;
+ *   y indicates vertical axis and 0 is at the bottom;
+ *   z indicates depth axis and 0 is the front of the ground plane,
+ *   and positive toward background wall. So, the center of planting ground
+ *   would be <0, 0, d/2>, where d is the max depth of the ground. 
  * - Deterministic productions (rather than stochastic) are used; 
  *   Hence, the order of the productions in the program are important.
  *
@@ -58,12 +65,10 @@
 #define	hL_PROD_ARRAY_SIZE	10	/* max # of lateral productions */
 #define hT_WID_R_MAX		0.98	/* width reduction rate when no branching */
 #define hSTD_R			0.2	/* ratio of std to mean for nran() */
-#define hGROUND_D 		6000	/* ground depth */
-#define hGROUND_W 		9000	/* ground width */
-#define hBGROUND_H		3000	/* background height */
 #define hMAX_TREES		1000	/* max # of trees to plant */
 #define hBACK_TEXTURE 		1    	/* background texture: 0 for none */
 #define hGROUND_TEXTURE 	2    	/* ground texture: 0 for none */
+#define hBGROUND_H		3000	/* background height */
 
 /* Frequently-used nran in the program: 20% as std, always positive */
 #define NRAN(m)			fabs(nran(m, (m) * hSTD_R))
@@ -72,12 +77,13 @@
  * Prefixed by 'p' for program readability.
  */
 #define pSEED 0	/* 0 for no seed setting */
-#define pMAX_YEARS 95	/* # of iteration - each step for a year */
-#define pPLANT_ANGLE 18		/* plant only within this angle for optimization */
-#define pFOR_ORSTUDIO 0		/* for ORStudio input: no BG, no texture */
+#define pMAX_YEARS 51	/* # of iteration - each step for a year */
+#define pFOR_ORSTUDIO 1		/* for ORStudio input: no BG, no texture */
+#define pGROUND_D 1018	/* ground depth */
+#define pGROUND_W 1089	/* ground width */
 
 /* Number of trees to plant for each type - can be set by 'planting' panel */
-#define pNUM_TREE_0 2
+#define pNUM_TREE_0 0
 #define pNUM_TREE_1 0
 #define pNUM_TREE_2 0
 #define pNUM_TREE_3 0
@@ -88,7 +94,7 @@
 #define pNUM_TREE_8 0
 #define pNUM_TREE_9 0
 #define pNUM_TREE_10 0
-#define pNUM_TREE_11 0
+#define pNUM_TREE_11 57
 #define hMAX_TREE_TYPES		12	/* max # of pre-packaged tree types */
 
 /* Parameters for each tree species.
@@ -96,13 +102,13 @@
  * - use 'param' panel to customize these parameters.
  * - later, a defined set of parameters can be packaged into predefined tree types
  */
-#define tWID_MIN 2		/* min width to grow down to */
-#define tWID_MAX 54	/* lowest trunk width */
-#define tPRUN_R 0.090000	/* pruning rate */
+#define tWID_MIN 1		/* min width to grow down to */
+#define tWID_MAX 24	/* lowest trunk width */
+#define tPRUN_R 0.000000	/* pruning rate */
 #define tLEN_MIN 15.000000	/* min internode length */
 #define tLEN_MAX 30.000000	/* max internode length */
-#define tL_MAX 4	/* max # of lateral branch. max=L_PROD_ARRAY_SIZE */
-#define tT_WID_R 0.940000	/* top width to mother when branching. 1 for all top */ 
+#define tL_MAX 6	/* max # of lateral branch. max=L_PROD_ARRAY_SIZE */
+#define tT_WID_R 0.900000	/* top width to mother when branching. 1 for all top */ 
 #define tT_ANG 2	/* mean for top apex angle. degree of alternation */
 #define tL_ANG 70	/* mean for lateral apex angle */
 #define tGRAV_SI 0.000000		/* gravity intensity of branch start */
@@ -219,28 +225,17 @@ start: {
 	/* Calculate where to plant the trees and put them into the placeholder.
 	 * TODO: For now, we do not consider minimum distance between the trees.
 	 */
-	/* dimension of ground based upon the plant angle */
-	d_max = hGROUND_D;
-	w_max = hGROUND_D * tan(pPLANT_ANGLE / 2);
 	t = 0;
 	n = 0;
 	while (t < hMAX_TREE_TYPES) {
 	  i = 0;
 	  while (i < n_t[t]) {
-	    w = ran(w_max);
-	    d = ran(d_max);
-	    while (d < d_max / w_max * w) {
-	      /* outside the plant angle; try again */
-	      w = ran(w_max);
-	      d = ran(d_max);
-	    }
-	    if (ran(1) < 0.5) {	/* plant the half in the opposite side */
-	      w = -w;
-	    }
+	    w = ran(pGROUND_W) - pGROUND_W / 2;
+	    d = ran(pGROUND_D);
 	    /* save the tree info at the placeholder */
 	    if (n < hMAX_TREES) {
 	      trees[n][0] = w;
-	      trees[n][1] = -d;
+	      trees[n][1] = d;
 	      trees[n][2] = t;
 	      n = n + 1;
 	    }
@@ -250,7 +245,7 @@ start: {
 	}
 	if (n == 1) {	/* special case: plant at the vintage point for debugging */
 	  trees[0][0] = 0;
-	  trees[0][1] = -1800;
+	  trees[0][1] = pGROUND_D / 4;
 	}
 
 	total_trees = n;
@@ -283,9 +278,9 @@ endeach: {
 }
 
 /* Background and ground plain */
-#define BACKGROUND(w,d,h) 	\
-	[@Tx(hBACK_TEXTURE);(0)!(0.3)@M(-w/2,0,-(d+300)){f(h)-(90)f(w)-(90)f(h)-(90)f(w)}] \
-	[@Tx(hGROUND_TEXTURE);(0)!(0.3)@M(-w/2,0,0){&(90)f(d)-(90)f(w)-(90)f(d)-(90)f(w)}]
+#define BACKGROUND(txtg,txtbg,w,d,h) 	\
+	[@Tx(txtbg);(0)!(0.3)@M(-w/2,0,d){f(h)-(90)f(w)-(90)f(h)-(90)f(w)}] \
+	[@Tx(txtg);(0)!(0.3)@M(-w/2,0,0){^(90)f(d)-(90)f(w)-(90)f(d)-(90)f(w)}]
 
 /* Planting a new tree (type=t) at location (x,y,z) */
 #define PLANT_TREE(x,y,z,n,t,txt,c)	@M(x,y,z)@Tx(txt);(c)!(p[t][iWID_MAX])[SV(0,0)A(n,0,p[t][iWID_MAX],pMAX_YEARS)E]
@@ -298,7 +293,8 @@ axiom: 	P(total_trees)B
  * The approach to grow one tree after another takes too long 
  * due to useless scans of productions.
  */
-P(n) : (n > 0) {
+P(n) : (n > 0) 
+	{
 	  n = n - 1; 
 	  x = trees[n][0];
 	  z = trees[n][1];
@@ -313,12 +309,23 @@ P(n) : (n > 0) {
 	  }
 	} 
 	--> PLANT_TREE(x,y,z,n,t,txt,c)P(n)
-P(n) : (n == 0) {	/* planting done. trigger to start growth */
+P(n) : (n == 0) 
+	{	/* planting done. trigger to start growth */
 	  curr_y = 0;
 	}
 	--> *
 
-B : (pFOR_ORSTUDIO == 0) --> BACKGROUND(hGROUND_W,hGROUND_D,hBGROUND_H)
+B : * 
+	{
+	  if (pFOR_ORSTUDIO == 1) {
+	    txtg = 0;
+	    txtbg = 0;
+	  }
+	  else {
+	    txtg = hGROUND_TEXTURE;
+	    txtbg = hBACK_TEXTURE;
+	  }
+	} --> BACKGROUND(txtg, txtbg, pGROUND_W,pGROUND_D,hBGROUND_H)
 
 /* A(n,t,s,w,e) is an apex.
  *	n: which tree to grow
