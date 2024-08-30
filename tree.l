@@ -69,6 +69,7 @@
 #define hBACK_TEXTURE 		1    	/* background texture: 0 for none */
 #define hGROUND_TEXTURE 	2    	/* ground texture: 0 for none */
 #define hBGROUND_H		3000	/* background height */
+#define hMAX_RELOC		1000	/* max # of relocating trees to keep distance */
 
 /* Frequently-used nran in the program: 20% as std, always positive */
 #define NRAN(m)			fabs(nran(m, (m) * hSTD_R))
@@ -77,10 +78,10 @@
  * Prefixed by 'p' for program readability.
  */
 #define pSEED 0	/* 0 for no seed setting */
-#define pMAX_YEARS 51	/* # of iteration - each step for a year */
-#define pFOR_ORSTUDIO 1		/* for ORStudio input: no BG, no texture */
-#define pGROUND_D 1018	/* ground depth */
-#define pGROUND_W 1089	/* ground width */
+#define pMAX_YEARS 40	/* # of iteration - each step for a year */
+#define pFOR_ORSTUDIO 0		/* for ORStudio input: no BG, no texture */
+#define pGROUND_D 2007	/* ground depth */
+#define pGROUND_W 2996	/* ground width */
 
 /* Number of trees to plant for each type - can be set by 'planting' panel */
 #define pNUM_TREE_0 0
@@ -94,7 +95,7 @@
 #define pNUM_TREE_8 0
 #define pNUM_TREE_9 0
 #define pNUM_TREE_10 0
-#define pNUM_TREE_11 57
+#define pNUM_TREE_11 6
 #define hMAX_TREE_TYPES		12	/* max # of pre-packaged tree types */
 
 /* Parameters for each tree species.
@@ -222,16 +223,35 @@ start: {
 	curr_y = -1; 	/* flag that growth has not started */
 	if (pSEED != 0) { srand(pSEED); }	/* set random seed */
 
-	/* Calculate where to plant the trees and put them into the placeholder.
-	 * TODO: For now, we do not consider minimum distance between the trees.
-	 */
+	/* Calculate where to plant the trees and put them into the placeholder. */
 	t = 0;
 	n = 0;
 	while (t < hMAX_TREE_TYPES) {
 	  i = 0;
 	  while (i < n_t[t]) {
-	    w = ran(pGROUND_W) - pGROUND_W / 2;
-	    d = ran(pGROUND_D);
+
+	    /* loop hMAX_RELOC to find the farthest location from other trees */
+	    md = 0; k = 0;
+	    while (k < hMAX_RELOC) {
+	      wk = ran(pGROUND_W) - pGROUND_W / 2;
+	      dk = ran(pGROUND_D);
+
+	      mdk = 1000000; j = 0;
+	      while (j < n) {
+		dj = sqrt((trees[j][0] - wk)^2 + (trees[j][1] - dk)^2);
+		if (dj < mdk) {
+		  mdk = dj;
+	      	}
+		j = j + 1;
+	      }
+	      if (mdk > md) {	/* a farther one is found */
+		w = wk;
+		d = dk;
+		md = mdk;
+	      }
+	      k = k + 1;
+	    }
+	    
 	    /* save the tree info at the placeholder */
 	    if (n < hMAX_TREES) {
 	      trees[n][0] = w;
