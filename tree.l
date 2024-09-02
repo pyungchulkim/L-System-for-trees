@@ -69,7 +69,7 @@
 #define hBACK_TEXTURE 		1    	/* background texture: 0 for none */
 #define hGROUND_TEXTURE 	2    	/* ground texture: 0 for none */
 #define hBGROUND_H		3000	/* background height */
-#define hMAX_RELOC		1000	/* max # of relocating trees to keep distance */
+#define hMAX_RELOC		100	/* max # of relocating trees to keep distance */
 
 /* Frequently-used nran in the program: 20% as std, always positive */
 #define NRAN(m)			fabs(nran(m, (m) * hSTD_R))
@@ -78,13 +78,13 @@
  * Prefixed by 'p' for program readability.
  */
 #define pSEED 0	/* 0 for no seed setting */
-#define pMAX_YEARS 40	/* # of iteration - each step for a year */
-#define pFOR_ORSTUDIO 0		/* for ORStudio input: no BG, no texture */
-#define pGROUND_D 2007	/* ground depth */
-#define pGROUND_W 2996	/* ground width */
+#define pMAX_YEARS 54	/* # of iteration - each step for a year */
+#define pFOR_ORSTUDIO 1		/* for ORStudio input: no BG, no texture */
+#define pGROUND_D 2925	/* ground depth */
+#define pGROUND_W 3985	/* ground width */
 
 /* Number of trees to plant for each type - can be set by 'planting' panel */
-#define pNUM_TREE_0 0
+#define pNUM_TREE_0 10
 #define pNUM_TREE_1 0
 #define pNUM_TREE_2 0
 #define pNUM_TREE_3 0
@@ -95,7 +95,7 @@
 #define pNUM_TREE_8 0
 #define pNUM_TREE_9 0
 #define pNUM_TREE_10 0
-#define pNUM_TREE_11 6
+#define pNUM_TREE_11 0
 #define hMAX_TREE_TYPES		12	/* max # of pre-packaged tree types */
 
 /* Parameters for each tree species.
@@ -103,19 +103,19 @@
  * - use 'param' panel to customize these parameters.
  * - later, a defined set of parameters can be packaged into predefined tree types
  */
-#define tWID_MIN 1		/* min width to grow down to */
-#define tWID_MAX 24	/* lowest trunk width */
-#define tPRUN_R 0.000000	/* pruning rate */
-#define tLEN_MIN 15.000000	/* min internode length */
-#define tLEN_MAX 30.000000	/* max internode length */
-#define tL_MAX 6	/* max # of lateral branch. max=L_PROD_ARRAY_SIZE */
-#define tT_WID_R 0.900000	/* top width to mother when branching. 1 for all top */ 
-#define tT_ANG 2	/* mean for top apex angle. degree of alternation */
-#define tL_ANG 70	/* mean for lateral apex angle */
-#define tGRAV_SI 0.000000		/* gravity intensity of branch start */
-#define tGRAV_MI 0.000000		/* gravity intensity of branch middle */
-#define tGRAV_EI 0.000000		/* gravity intensity of branch end */
-#define tSTART_DEPTH 0.000000			/* depth of the first branching - no pruning */
+#define tWID_MIN 4		/* min width to grow down to */
+#define tWID_MAX 40	/* lowest trunk width */
+#define tPRUN_R 0.670000	/* pruning rate */
+#define tLEN_MIN 23	/* min internode length */
+#define tLEN_MAX 55	/* max internode length */
+#define tL_MAX 3	/* max # of lateral branch. max=L_PROD_ARRAY_SIZE */
+#define tT_WID_R 0.830000	/* top width to mother when branching. 1 for all top */ 
+#define tT_ANG 9	/* mean for top apex angle. degree of alternation */
+#define tL_ANG 94	/* mean for lateral apex angle */
+#define tGRAV_SI -0.190000		/* gravity intensity of branch start */
+#define tGRAV_MI -0.080000		/* gravity intensity of branch middle */
+#define tGRAV_EI -0.030000		/* gravity intensity of branch end */
+#define tSTART_DEPTH -0.333333			/* depth of the first branching - no pruning */
 #define tTEXTURE 3			/* texture index for bark */
 
 /* Parameter indexes
@@ -325,7 +325,7 @@ P(n) : (n > 0)
 	  /* set texture and color differently for ORStudio input */
 	  if (pFOR_ORSTUDIO == 1) {
 	    txt = 0;
-	    c = floor(ran(240)) + 16;	/* use a random color skipping the first 16 grays */
+	    c = (n * 13) % 240 + 16;	/* jump prime number skipping the first 16 grays */
 	  }
 	} 
 	--> PLANT_TREE(x,y,z,n,t,txt,c)P(n)
