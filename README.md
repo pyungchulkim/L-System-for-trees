@@ -47,7 +47,7 @@
  *   Hence, the order of the productions in the program are important.
  *
  * by Pyungchul Kim, 2024
- * http://orderedrandom.com
+ * https://orderedrandom.com
  */
 </PRE>
 
